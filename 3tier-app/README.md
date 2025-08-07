@@ -17,4 +17,3 @@ The folders `web` and `api` respectively describe how to install and run each ap
 - Infrastructure must be deployed as code using Terraform (manual `terraform apply` from terminal is acceptable).
 - CDN logs must be collected and sent to S3 bucket or other storage solution.
 - Any cloud provider and any VCS (e.g., GitHub, GitLab, etc.) can be used.
-
