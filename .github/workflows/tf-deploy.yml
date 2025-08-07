@@ -1,0 +1,57 @@
+name: Multi-Account Terraform Deploy Workflow
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
+
+# Controls when the workflow will run
+on:
+  # trigger/start job when push happens to main or staging or feature/** branch
+  push:
+    branches: [ "main", "staging", "feature/**" ]
+    
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# workflow level variable, available only within this YAML file to this workflow
+env:
+  ENVIRONMENT_STAGE: ${{ (github.ref == 'refs/heads/main' && 'production') || (github.ref == 'refs/heads/staging' && 'staging') || 'dev' }}
+
+jobs:
+  deploy-infrastructure:
+    # if main branch => production environment
+    # if staging branch => staging environment
+    # if any other branch name => dev environment
+    environment: ${{ (github.ref == 'refs/heads/main' && 'production') || (github.ref == 'refs/heads/staging' && 'staging') || 'dev' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra/
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+  
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.IAM_ROLE }}
+          role-session-name: "terraform-session"
+          aws-region: "us-east-1"
+
+      - name: Initialize Terraform
+        run: terraform init -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" 
+
+      - name: Format Check or Lint Test
+        run: terraform fmt -check
+
+      - name: Plan Infrastructure
+        run: terraform plan -input=false 
+
+      - name: Deploy infrastructure
+        run: terraform apply -auto-approve -input=false 
+
+      # - name: Test Kubernetes cluster connection
+      #   run: |
+      #     aws eks update-kubeconfig --name project-x-eks-${{ env.ENVIRONMENT_STAGE }}
+      #     kubectl get nodes
