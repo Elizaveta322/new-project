@@ -26,7 +26,7 @@ jobs:
     - name: Build and Push Backend image to Amazon ECR
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        REPOSITORY: reviews-app-backend
+        REPOSITORY: new-project-api
         IMAGE_TAG: 0.1
       working-directory: api-backend/
       run: |
@@ -37,7 +37,7 @@ jobs:
     - name: Build and Push Frontend image to Amazon ECR
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        REPOSITORY: reviews-app-frontend
+        REPOSITORY: new-project-web
         IMAGE_TAG: 0.1
       working-directory: frontend/
       run: |
