@@ -1,0 +1,46 @@
+name: Simple-app
+permissions:
+  id-token: write
+  contents: read
+on:
+  push:
+    branches: [ "main", "staging", "feature/**"]
+
+jobs:
+  app-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+      with:
+        role-to-assume: arn:aws:iam::622620887254:role/app-build
+        aws-region: us-east-1
+
+# CI
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build and Push Backend image to Amazon ECR
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: reviews-app-backend
+        IMAGE_TAG: 0.1
+      working-directory: api-backend/
+      run: |
+        docker build -t $REPOSITORY:$IMAGE_TAG .
+        docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+    - name: Build and Push Frontend image to Amazon ECR
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: reviews-app-frontend
+        IMAGE_TAG: 0.1
+      working-directory: frontend/
+      run: |
+        docker build -t $REPOSITORY:$IMAGE_TAG .
+        docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
