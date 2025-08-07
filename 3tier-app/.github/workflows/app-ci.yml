@@ -4,7 +4,7 @@ permisssions:
   contents: read
 on:
   push:
-    branches: [ "main", "staging", "faeture/**"]
+    branches: [ "main", "staging", "feature/**"]
 
 jobs:
   app-build:
