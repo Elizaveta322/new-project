@@ -9,10 +9,10 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "new-project-tfstate-elizaveta"
-    key            = "global/s3/terraform.tfstate"
-    region         = "us-east-1"
-    use_lockfile   = true
+    bucket       = "new-project-tfstate-elizaveta"
+    key          = "global/s3/terraform.tfstate"
+    region       = "us-east-1"
+    use_lockfile = true
   }
 }
 
