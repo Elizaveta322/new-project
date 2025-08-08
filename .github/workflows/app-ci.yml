@@ -2,9 +2,9 @@ name: Simple-app
 permissions:
   id-token: write
   contents: read
-on:
-  push:
-    branches: [ "main", "staging", "feature/**"]
+# on:
+#   push:
+#     branches: [ "main", "staging", "feature/**"]
 
 jobs:
   app-build:
