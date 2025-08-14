@@ -1,5 +1,5 @@
 module "vpc" {
-  source        = "../vpc"
+  source        = "./vpc"
   env           = var.env
   cluster_name  = var.cluster_name
   vpc_cidr      = var.vpc_cidr
